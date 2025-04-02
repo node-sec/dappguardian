@@ -5,7 +5,7 @@ const { ethers } = require('ethers');
 const crypto = require('crypto');
 
 const CONTRACT_ABI = [
-  "function registerCodeUpdate(string memory domain, bytes32 codeHash) external"
+  "function registerRelease(string memory domain, FileHash[] memory files, string memory metadata) external"
 ];
 
 async function submitUpdate() {
@@ -22,6 +22,13 @@ async function submitUpdate() {
       .update(manifest.map(entry => entry.hash).join(''))
       .digest();
 
+    // Convert the manifest entries to the FileHash structure expected by the contract
+    const fileHashes = manifest.map(entry => ({
+      filename: entry.path,
+      hash: '0x' + entry.hash, // Ensure hash is in bytes32 format
+      timestamp: Math.floor(Date.now() / 1000)
+    }));
+
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
     const contract = new ethers.Contract(
@@ -30,9 +37,10 @@ async function submitUpdate() {
       wallet
     );
 
-    const tx = await contract.registerCodeUpdate(
+    const tx = await contract.registerRelease(
       process.env.DAPP_DOMAIN,
-      globalHash
+      fileHashes,
+      "Update " + new Date().toISOString() // Add some metadata about the update
     );
     await tx.wait();
 
