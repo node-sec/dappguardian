@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "DappGuardian",
+  "version": "1.0.0",
+  "permissions": [
+    "storage",
+    "webRequest",
+    "webNavigation",
+    "tabs",
+    "<all_urls>"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "dist/background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+} 

@@ -1,0 +1,30 @@
+{
+  "name": "dappguardian-extension",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.260",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.4",
+    "esbuild": "^0.17.19",
+    "concurrently": "^8.0.1",
+    "chokidar-cli": "^3.0.0"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "build:background": "esbuild background.ts --bundle --outfile=dist/background.js",
+    "build:popup": "esbuild popup/index.tsx --bundle --outfile=dist/popup.js",
+    "copy:static": "cp popup/App.css dist/popup/ && cp popup.html dist/",
+    "build": "mkdir -p dist/popup && yarn type-check && yarn build:background && yarn build:popup && yarn copy:static",
+    "watch:background": "esbuild background.ts --bundle --outfile=dist/background.js --watch",
+    "watch:popup": "esbuild popup/index.tsx --bundle --outfile=dist/popup.js --watch",
+    "watch:static": "chokidar \"popup/App.css\" -c \"yarn copy:static\"",
+    "dev": "concurrently \"yarn type-check:watch\" \"yarn watch:background\" \"yarn watch:popup\" \"yarn watch:static\""
+  }
+} 
