@@ -231,7 +231,9 @@ class DappGuardian {
           siteHashes[hostname][existingIndex] = {
             url: data.url,
             hash: data.hash,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
+            verified: false,
+            contractHash: ''
           };
           await chrome.storage.local.set({ siteHashes });
         }
@@ -240,7 +242,9 @@ class DappGuardian {
         siteHashes[hostname].push({
           url: data.url,
           hash: data.hash,
-          timestamp: data.timestamp
+          timestamp: data.timestamp,
+          verified: false,
+          contractHash: ''
         });
         await chrome.storage.local.set({ siteHashes });
       }

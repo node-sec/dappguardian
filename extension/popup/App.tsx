@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SiteHashes, SiteVerification, HashEntry } from '../types';
+import ContractService from '../services/contractService';
 import './App.css';
 
 export function App() {
@@ -10,6 +11,8 @@ export function App() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [currentVerification, setCurrentVerification] = useState<string>('');
   const [verifiedFiles, setVerifiedFiles] = useState<Set<string>>(new Set());
+  const [contractHashes, setContractHashes] = useState<Map<string, string>>(new Map());
+  const [contractService] = useState(() => new ContractService());
 
   const loadTabData = async (tabId: number) => {
     setActiveTabId(tabId);
@@ -58,30 +61,75 @@ export function App() {
     if (!entries?.length) return;
     
     setIsVerifying(true);
-    setCurrentVerification('> Verifying files...');
+    setCurrentVerification('> Connecting to blockchain...');
     
     const totalFiles = entries.length;
     let verifiedCount = 0;
+    const newVerifiedFiles = new Set<string>();
+    const newContractHashes = new Map<string, string>();
 
-    const promises = entries.map((entry, index) => {
-      return new Promise<void>(resolve => {
-        setTimeout(() => {
-          setVerifiedFiles(prev => new Set([...prev, entry.url]));
-          verifiedCount++;
-          setVerificationStatus({
-            isVerified: verifiedCount === totalFiles,
-            totalFiles,
-            verifiedFiles: verifiedCount,
-            lastVerified: Date.now()
-          });
-          resolve();
-        }, 25 * index);
+    try {
+      // First, get all files from the contract
+      const contractFiles = await contractService.getLatestReleaseFiles(activeTab || '');
+      
+      setCurrentVerification('> Verifying files...');
+      
+      // Create a map for easier lookup
+      const contractFileMap = new Map<string, string>();
+      contractFiles.forEach(file => {
+        contractFileMap.set(file.filename, file.hash);
       });
-    });
-
-    await Promise.all(promises);
-    setCurrentVerification('> All files verified ✓');
-    setIsVerifying(false);
+      
+      // Now verify each file individually
+      for (const entry of entries) {
+        const filename = entry.url.split('/').pop() || '';
+        const isVerified = await contractService.verifyHash(
+          activeTab || '', 
+          filename,
+          entry.hash
+        );
+        
+        // Find matching contract hash for display
+        const contractHash = contractFiles.find(file => 
+          file.filename === filename || 
+          filename.includes(file.filename)
+        )?.hash || '';
+        
+        if (isVerified) {
+          newVerifiedFiles.add(entry.url);
+          verifiedCount++;
+        }
+        
+        newContractHashes.set(entry.url, contractHash);
+        
+        setVerificationStatus({
+          isVerified: false, // Will update at the end
+          totalFiles,
+          verifiedFiles: verifiedCount,
+          lastVerified: Date.now()
+        });
+        
+        // Small delay to show progress in the UI
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      setVerifiedFiles(newVerifiedFiles);
+      setContractHashes(newContractHashes);
+      
+      setVerificationStatus({
+        isVerified: verifiedCount > 0 && verifiedCount === totalFiles,
+        totalFiles,
+        verifiedFiles: verifiedCount,
+        lastVerified: Date.now()
+      });
+      
+      setCurrentVerification(`> Verification complete. ${verifiedCount}/${totalFiles} files verified.`);
+    } catch (error) {
+      console.error("Error during verification:", error);
+      setCurrentVerification(`> Error during verification: ${(error as Error).message}`);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   // Only trigger verification when activeTab changes or when sites are initially loaded
@@ -137,10 +185,10 @@ export function App() {
             {sites[activeTab]?.map((entry, index) => (
               <div 
                 key={`${entry.url}-${entry.timestamp}`} 
-                className={`verification-entry ${verifiedFiles.has(entry.url) ? 'verified' : ''}`}
+                className={`verification-entry ${verifiedFiles.has(entry.url) ? 'verified' : 'unverified'}`}
               >
                 <div className="verification-status">
-                  {verifiedFiles.has(entry.url) ? '✓' : '•'}
+                  {verifiedFiles.has(entry.url) ? '✓' : '✗'}
                 </div>
                 <div className="verification-details">
                   <div className="file-path">{entry.url.split('/').pop()}</div>
@@ -152,8 +200,8 @@ export function App() {
                     <div className="contract-hash">
                       <span className="label">CONTRACT</span>
                       <span className="hash">
-                        {verifiedFiles.has(entry.url) ? 
-                          entry.hash.slice(0, 8) : 
+                        {contractHashes.has(entry.url) ? 
+                          contractHashes.get(entry.url)?.slice(0, 8) || '--------' : 
                           '--------'}
                       </span>
                     </div>
