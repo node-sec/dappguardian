@@ -204,4 +204,31 @@ h1 {
   border-radius: 4px;
   border: 1px solid var(--accent);
   min-height: 20px;
+  white-space: pre-line;
+}
+
+.verification-controls {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.retry-button {
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
+.retry-button:active {
+  transform: translateY(1px);
 } 

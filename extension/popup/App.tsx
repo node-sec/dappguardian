@@ -70,9 +70,15 @@ export function App() {
 
     try {
       // First, get all files from the contract
+      setCurrentVerification('> Retrieving manifest from IPFS...');
       const contractFiles = await contractService.getLatestReleaseFiles(activeTab || '');
       
-      setCurrentVerification('> Verifying files...');
+      if (contractFiles.length === 0) {
+        setCurrentVerification('> No verified files found on IPFS. This could mean either: \n1. This domain has not registered any files \n2. There was an issue retrieving data from IPFS');
+        return;
+      }
+      
+      setCurrentVerification(`> Found ${contractFiles.length} files in manifest. Verifying...`);
       
       // Create a map for easier lookup
       const contractFileMap = new Map<string, string>();
@@ -126,9 +132,24 @@ export function App() {
       setCurrentVerification(`> Verification complete. ${verifiedCount}/${totalFiles} files verified.`);
     } catch (error) {
       console.error("Error during verification:", error);
-      setCurrentVerification(`> Error during verification: ${(error as Error).message}`);
+      
+      // Provide more specific error messages for IPFS-related issues
+      if ((error as Error).message.includes('IPFS')) {
+        setCurrentVerification(`> IPFS Error: ${(error as Error).message}\n> Try again later or contact the site owner.`);
+      } else {
+        setCurrentVerification(`> Error during verification: ${(error as Error).message}`);
+      }
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  // Add retry button to the UI for IPFS failures
+  const retryVerification = () => {
+    if (activeTab && sites[activeTab]) {
+      // Clear the contract service cache first
+      contractService.clearCache();
+      verifyCurrentSite(sites[activeTab]);
     }
   };
 
@@ -178,6 +199,14 @@ export function App() {
           {isVerifying && (
             <div className="verification-log">
               {currentVerification}
+            </div>
+          )}
+
+          {!isVerifying && currentVerification.includes('Error') && (
+            <div className="verification-controls">
+              <button className="retry-button" onClick={retryVerification}>
+                Retry Verification
+              </button>
             </div>
           )}
 

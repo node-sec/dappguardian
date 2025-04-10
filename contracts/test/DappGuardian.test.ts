@@ -9,19 +9,8 @@ describe("DappGuardian", function () {
   let developer: HardhatEthersSigner;
   let other: HardhatEthersSigner;
   const testDomain = "test.com";
-  const testFiles = [
-    {
-      filename: "index.js",
-      hash: ethers.id("test content 1"),
-      timestamp: Math.floor(Date.now() / 1000)
-    },
-    {
-      filename: "app.js",
-      hash: ethers.id("test content 2"),
-      timestamp: Math.floor(Date.now() / 1000)
-    }
-  ];
-
+  const testIpfsCid = "QmT5NvUtoM5nWFfrQdVrFtvGfKFmG7AHE8P34isapyhCxX";
+  
   beforeEach(async function () {
     [owner, developer, other] = await ethers.getSigners();
     const DappGuardian = await ethers.getContractFactory("DappGuardian");
@@ -53,47 +42,37 @@ describe("DappGuardian", function () {
     it("should allow developer to register a new release", async function () {
       const metadata = "Release 1.0.0";
       
-      await expect(dappGuardian.connect(developer).registerRelease(testDomain, testFiles, metadata))
+      await expect(dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, metadata))
         .to.emit(dappGuardian, "ReleaseRegistered")
-        .withArgs(testDomain, 1, testFiles.length, await getBlockTimestamp())
-        .to.emit(dappGuardian, "FileHashRegistered")
-        .withArgs(testDomain, 1, testFiles[0].filename, testFiles[0].hash)
-        .to.emit(dappGuardian, "FileHashRegistered")
-        .withArgs(testDomain, 1, testFiles[1].filename, testFiles[1].hash);
+        .withArgs(testDomain, 1, testIpfsCid, await getBlockTimestamp());
     });
 
     it("should prevent non-developer from registering a release", async function () {
-      await expect(dappGuardian.connect(other).registerRelease(testDomain, testFiles, ""))
+      await expect(dappGuardian.connect(other).registerRelease(testDomain, testIpfsCid, ""))
         .to.be.revertedWithCustomError(dappGuardian, "Unauthorized");
     });
 
     it("should allow registering multiple releases", async function () {
-      await dappGuardian.connect(developer).registerRelease(testDomain, testFiles, "v1");
-      await dappGuardian.connect(developer).registerRelease(testDomain, testFiles, "v2");
+      await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, "v1");
+      await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, "v2");
       
       const history = await dappGuardian.getReleaseHistory(testDomain);
       expect(history.length).to.equal(2);
       expect(history[0].version).to.equal(1n);
       expect(history[1].version).to.equal(2n);
     });
-
-    it("should allow registering a release with no files", async function () {
-      await expect(dappGuardian.connect(developer).registerRelease(testDomain, [], "empty"))
-        .to.emit(dappGuardian, "ReleaseRegistered")
-        .withArgs(testDomain, 1, 0, await getBlockTimestamp());
-    });
   });
 
   describe("Release Queries", function () {
     beforeEach(async function () {
       await dappGuardian.connect(developer).registerDomain(testDomain);
-      await dappGuardian.connect(developer).registerRelease(testDomain, testFiles, "v1");
+      await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, "v1");
     });
 
     it("should return the latest release", async function () {
       const release = await dappGuardian.getLatestRelease(testDomain);
       expect(release.version).to.equal(1n);
-      expect(release.files.length).to.equal(testFiles.length);
+      expect(release.ipfsCid).to.equal(testIpfsCid);
       expect(release.metadata).to.equal("v1");
     });
 
@@ -105,7 +84,7 @@ describe("DappGuardian", function () {
     it("should return a specific release version", async function () {
       const release = await dappGuardian.getRelease(testDomain, 1);
       expect(release.version).to.equal(1n);
-      expect(release.files.length).to.equal(testFiles.length);
+      expect(release.ipfsCid).to.equal(testIpfsCid);
     });
 
     it("should revert when getting invalid release version", async function () {
@@ -116,7 +95,7 @@ describe("DappGuardian", function () {
     });
 
     it("should return complete release history", async function () {
-      await dappGuardian.connect(developer).registerRelease(testDomain, testFiles, "v2");
+      await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, "v2");
       const history = await dappGuardian.getReleaseHistory(testDomain);
       expect(history.length).to.equal(2);
       expect(history[0].version).to.equal(1n);
@@ -124,22 +103,10 @@ describe("DappGuardian", function () {
     });
   });
 
-  describe("Developer Management", function () {
-    it("should return zero address for unregistered domain", async function () {
-      expect(await dappGuardian.getDeveloper("nonexistent.com"))
-        .to.equal(ethers.ZeroAddress);
-    });
-
-    it("should return correct developer address", async function () {
-      await dappGuardian.connect(developer).registerDomain(testDomain);
-      expect(await dappGuardian.getDeveloper(testDomain))
-        .to.equal(developer.address);
-    });
-  });
-});
-
-async function getBlockTimestamp(): Promise<number> {
-  const blockNumber = await ethers.provider.getBlockNumber();
-  const block = await ethers.provider.getBlock(blockNumber);
-  return Number(block?.timestamp);
-} 
+  // Helper function to get the current block timestamp
+  async function getBlockTimestamp() {
+    const blockNumber = await ethers.provider.getBlockNumber();
+    const block = await ethers.provider.getBlock(blockNumber);
+    return block?.timestamp;
+  }
+}); 

@@ -10,9 +10,9 @@ contract DappGuardian {
 
     struct Release {
         uint256 version;
-        FileHash[] files;
+        string ipfsCid;    // IPFS CID pointing to the manifest JSON
         uint256 timestamp;
-        string metadata;  // Optional metadata about the release
+        string metadata;   // Optional metadata about the release
     }
 
     mapping(string => address) public domainToDeveloper;
@@ -21,15 +21,8 @@ contract DappGuardian {
     event ReleaseRegistered(
         string indexed domain,
         uint256 version,
-        uint256 numFiles,
+        string ipfsCid,
         uint256 timestamp
-    );
-
-    event FileHashRegistered(
-        string indexed domain,
-        uint256 version,
-        string filename,
-        bytes32 hash
     );
 
     error Unauthorized();
@@ -54,30 +47,21 @@ contract DappGuardian {
 
     function registerRelease(
         string memory domain,
-        FileHash[] memory files,
+        string memory ipfsCid,
         string memory metadata
     ) external onlyDeveloper(domain) {
         uint256 newVersion = domainToReleases[domain].length + 1;
         
         Release storage newRelease = domainToReleases[domain].push();
         newRelease.version = newVersion;
+        newRelease.ipfsCid = ipfsCid;
         newRelease.timestamp = block.timestamp;
         newRelease.metadata = metadata;
-
-        for (uint i = 0; i < files.length; i++) {
-            newRelease.files.push(files[i]);
-            emit FileHashRegistered(
-                domain,
-                newVersion,
-                files[i].filename,
-                files[i].hash
-            );
-        }
 
         emit ReleaseRegistered(
             domain,
             newVersion,
-            files.length,
+            ipfsCid,
             block.timestamp
         );
     }
