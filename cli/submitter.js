@@ -3,7 +3,6 @@ require('dotenv').config();
 const fs = require('fs').promises;
 const { ethers } = require('ethers');
 const crypto = require('crypto');
-const { create } = require('ipfs-http-client');
 const axios = require('axios');
 const FormData = require('form-data');
 
@@ -18,34 +17,60 @@ async function uploadToIPFS(jsonData) {
     const formData = new FormData();
     const manifestBuffer = Buffer.from(JSON.stringify(jsonData, null, 2));
     
+    // Add the file to the form data - notice the specific format required by Pinata
     formData.append('file', manifestBuffer, {
       filename: 'manifest.json',
       contentType: 'application/json',
     });
     
-    // Set pinning options
-    const pinataMetadata = JSON.stringify({
-      name: `DApp-Manifest-${Date.now()}`,
-    });
-    formData.append('pinataMetadata', pinataMetadata);
+    // Specify network (public IPFS)
+    formData.append('network', 'public');
     
-    const pinataOptions = JSON.stringify({
-      cidVersion: 0,
-    });
-    formData.append('pinataOptions', pinataOptions);
+    // Set pinning options with proper format
+    formData.append('pinataMetadata', JSON.stringify({
+      name: `DApp-Manifest-${Date.now()}`
+    }));
     
-    // Upload to Pinata
-    const response = await axios.post(process.env.IPFS_API_URL, formData, {
-      headers: {
-        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
-        'pinata_api_key': process.env.IPFS_API_KEY,
-        'pinata_secret_api_key': process.env.IPFS_API_SECRET,
-      },
-    });
+    formData.append('pinataOptions', JSON.stringify({
+      cidVersion: 0
+    }));
     
-    return response.data.IpfsHash;
+    // Check if API keys are available
+    if (!process.env.IPFS_API_JWT) {
+      throw new Error('Pinata API keys not found in environment variables');
+    }
+    
+    console.log('Sending request to Pinata...');
+    
+    // Use the updated v3 API endpoint
+    const response = await axios.post(
+      process.env.IPFS_API_URL || 'https://uploads.pinata.cloud/v3/files',
+      formData, 
+      {
+        maxBodyLength: Infinity,
+        headers: {
+          // Let FormData set its content-type with proper boundaries
+          ...formData.getHeaders ? formData.getHeaders() : {},
+          // Use Authorization Bearer token format instead of separate API keys
+          Authorization: `Bearer ${process.env.IPFS_API_JWT}`
+        },
+      }
+    );
+    
+    if (!response.data || !response.data.data || !response.data.data.cid) {
+      console.error('Unexpected response structure:', response.data);
+      throw new Error('Invalid response from Pinata API');
+    }
+    
+    return response.data.data.cid;
   } catch (error) {
-    console.error('Error uploading to IPFS:', error);
+    console.error('Error uploading to IPFS:');
+    if (error.response) {
+      console.error(`Status: ${error.response.status}`);
+      console.error('Response data:', error.response.data);
+    } else {
+      console.error(error.message);
+    }
     throw error;
   }
 }

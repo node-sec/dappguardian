@@ -19,24 +19,49 @@ describe("DappGuardian", function () {
   });
 
   describe("Domain Registration", function () {
-    it("should allow registering a new domain", async function () {
-      await expect(dappGuardian.connect(developer).registerDomain(testDomain))
+    it("should allow owner to register a new domain", async function () {
+      await expect(dappGuardian.connect(owner).registerDomain(testDomain, developer.address))
         .to.emit(dappGuardian, "DomainRegistered")
         .withArgs(developer.address, testDomain);
 
       expect(await dappGuardian.getDeveloper(testDomain)).to.equal(developer.address);
     });
 
+    it("should prevent non-owner from registering a domain", async function () {
+      await expect(dappGuardian.connect(developer).registerDomain(testDomain, developer.address))
+        .to.be.revertedWithCustomError(dappGuardian, "OwnableUnauthorizedAccount");
+    });
+
     it("should prevent registering an already registered domain", async function () {
-      await dappGuardian.connect(developer).registerDomain(testDomain);
-      await expect(dappGuardian.connect(other).registerDomain(testDomain))
+      await dappGuardian.connect(owner).registerDomain(testDomain, developer.address);
+      await expect(dappGuardian.connect(owner).registerDomain(testDomain, other.address))
         .to.be.revertedWithCustomError(dappGuardian, "DomainAlreadyRegistered");
+    });
+  });
+
+  describe("Ownership", function () {
+    it("should set the deployer as the owner", async function () {
+      expect(await dappGuardian.owner()).to.equal(owner.address);
+    });
+
+    it("should allow transferring ownership", async function () {
+      await dappGuardian.connect(owner).transferOwnership(developer.address);
+      expect(await dappGuardian.owner()).to.equal(developer.address);
+      
+      // New owner should be able to register domains
+      await dappGuardian.connect(developer).registerDomain("newdomain.com", other.address);
+      expect(await dappGuardian.getDeveloper("newdomain.com")).to.equal(other.address);
+    });
+
+    it("should prevent non-owner from transferring ownership", async function () {
+      await expect(dappGuardian.connect(developer).transferOwnership(other.address))
+        .to.be.revertedWithCustomError(dappGuardian, "OwnableUnauthorizedAccount");
     });
   });
 
   describe("Release Management", function () {
     beforeEach(async function () {
-      await dappGuardian.connect(developer).registerDomain(testDomain);
+      await dappGuardian.connect(owner).registerDomain(testDomain, developer.address);
     });
 
     it("should allow developer to register a new release", async function () {
@@ -78,7 +103,7 @@ describe("DappGuardian", function () {
 
   describe("Release Queries", function () {
     beforeEach(async function () {
-      await dappGuardian.connect(developer).registerDomain(testDomain);
+      await dappGuardian.connect(owner).registerDomain(testDomain, developer.address);
       await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, "v1");
     });
 

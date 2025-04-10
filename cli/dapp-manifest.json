@@ -1,0 +1,222 @@
+[
+  {
+    "path": ".well-known/apple-app-site-association",
+    "hash": "5ed6509656e33ce7cbad82e5ff2e0cb5b66c9a3dcc20a8d400601fb789220575"
+  },
+  {
+    "path": ".well-known/assetlinks.json",
+    "hash": "46a90bdc8d8f64d2cf95db372447ea1c7b7697a29e532a7b9f5649168c9d67ec"
+  },
+  {
+    "path": ".well-known/walletconnect.txt",
+    "hash": "5bf6d92bdd2678417138e5535a738d833190a9ca97ca8734b1e4ed511ecb1eb0"
+  },
+  {
+    "path": "451.html",
+    "hash": "e2e9127a2db33ffaa1f681c1a753a50825c7773ec6b9406f9e6a48bc6fe356c3"
+  },
+  {
+    "path": "OnchainFX.pdf",
+    "hash": "e10b327c53d4d451c21ca1986736a73d0aadea14df63b69bd29c79cc7aadb9e5"
+  },
+  {
+    "path": "SuperiorReturnsForLiquidityProviders.pdf",
+    "hash": "7c655a412b0e86aa123b9ef095d3c65f21d7ca9b6a92bd047d73958dc314be50"
+  },
+  {
+    "path": "TheDominanceofUniswapv3Liquidity.pdf",
+    "hash": "a98732957b8e7832d65c7a96ed73dd026600bae5b6a626fea4323e61831c729b"
+  },
+  {
+    "path": "_routes.json",
+    "hash": "8ee6c8e9483c24eb2d791e350c0be86a371a50377f8e65720ffcc2471d3f188b"
+  },
+  {
+    "path": "app-sitemap.xml",
+    "hash": "f1a6df4cb649da82f5e41b7cfafe33ff1aab87df8e4ff9bcc74e30157e406769"
+  },
+  {
+    "path": "apple-app-site-association",
+    "hash": "5ed6509656e33ce7cbad82e5ff2e0cb5b66c9a3dcc20a8d400601fb789220575"
+  },
+  {
+    "path": "csp.json",
+    "hash": "bffe075f592f287ff334d9d895ce78f738933e18ab455151f53696cc67bb8393"
+  },
+  {
+    "path": "dev-csp.json",
+    "hash": "1d0e723e156f40639e5213561f975e4c785e7bd0463895052eb763fcca4c48ea"
+  },
+  {
+    "path": "favicon.ico",
+    "hash": "a5c35d7c371a6cf3df75a791053b7411ce29af0841aa81edacdc787ed51056e3"
+  },
+  {
+    "path": "favicon.png",
+    "hash": "e1501668d96ded5bfc98fc0f573b2feb6cadf57b932e47c960f65aea6fdc4827"
+  },
+  {
+    "path": "feeReturnsMathAppendix.pdf",
+    "hash": "d47f99d245d701388e1b0fe1301353aa12fb7f40e3f6d00544aec2e46f850145"
+  },
+  {
+    "path": "flair.pdf",
+    "hash": "dcee8796ad3e604f2a25c4a01655db5265b54486de89321c65edc04d6d165413"
+  },
+  {
+    "path": "fonts/Basel-Grotesk-Book.woff",
+    "hash": "20bd24edccb6b4cf94d4b7658a2e17a3b10c6abeec9b5e7233963090b28dd472"
+  },
+  {
+    "path": "fonts/Basel-Grotesk-Book.woff2",
+    "hash": "453ff5217212a09f55acd96b891db5f1f7728b4d87d363931495579cb9eaf0ab"
+  },
+  {
+    "path": "fonts/Basel-Grotesk-Medium.woff",
+    "hash": "d591c15eeed396b161cc97d2c6e140e274cabfbb9e456a78e3237bc0681e6fe6"
+  },
+  {
+    "path": "fonts/Basel-Grotesk-Medium.woff2",
+    "hash": "f7e0fd66d9a817915317bbc685cd42d14a7c5570a505fdc2d1c62d511dfec9e3"
+  },
+  {
+    "path": "fonts/Inter-normal.var.ttf",
+    "hash": "c3b7c80beacfc5c4c486826ed9ace8cbfd074aabb9fdb4638967fa3e29554e91"
+  },
+  {
+    "path": "images/1200x630_Rich_Link_Preview_Image.png",
+    "hash": "cee20d4bf5178b441c5c8e5cbe4e255579085179d2546a0195a7340c2e055b99"
+  },
+  {
+    "path": "images/192x192_App_Icon.png",
+    "hash": "f2cac096ed0052736cbad1e4f4758d454ed52524ab94e42e76046b93380f738b"
+  },
+  {
+    "path": "images/324x74_App_Watermark.png",
+    "hash": "a00c72db1692d020eec5aabed3ea6942fc56df7d2c47f723b4750517698fe5af"
+  },
+  {
+    "path": "images/512x512_App_Icon.png",
+    "hash": "814824e1f29a34016526c9a1005799fafd1c0cfdd2a456e7485743a83b37b949"
+  },
+  {
+    "path": "images/54x54_Verified_Check.svg",
+    "hash": "493a152669f5656b2d5c5ead13aaacd701076d5c170ea0d5746ba656d572f8ae"
+  },
+  {
+    "path": "images/extension_promo/announcement_modal_desktop2.png",
+    "hash": "f05a206a5293763012a1c989d4b9c3e81606c36239a0afa2518ec7ab12208310"
+  },
+  {
+    "path": "images/extension_promo/background_connector.png",
+    "hash": "98f7a427e5f80aa3a177d2d186f3dd2d5e5554958f15b76c41d85160fa903dcc"
+  },
+  {
+    "path": "images/logos/Arbitrum_Logo.png",
+    "hash": "37b03d0e5f98fed2ef824608efecb2634a30914c5ded6c5d5ff01e1ac84e8f37"
+  },
+  {
+    "path": "images/logos/Avax_Logo.png",
+    "hash": "be04153529d4a41578a71c118c7306f73da8795e9c25acaa94b7f1d7ed241e5b"
+  },
+  {
+    "path": "images/logos/BNB_Logo.png",
+    "hash": "a3dacbe7ede4c591b8beb7ded53196d1fc2d91415b566c25879f738a8c84b3c7"
+  },
+  {
+    "path": "images/logos/Base_Logo.png",
+    "hash": "d9234b557ba344e3bd6b2777069a6c9b6bf141b1f0fb490e135e013bbc8c29a8"
+  },
+  {
+    "path": "images/logos/Blast_Logo.png",
+    "hash": "17377ecb53f2ae45feb1e5eb55da2c2c7551975a0b5efcc8c9f10c6647b2bd21"
+  },
+  {
+    "path": "images/logos/Celo_Logo.png",
+    "hash": "efebb8f210a4adba8cde9fc08e7513242a3269bd0ca605e9149eddd491d3d45c"
+  },
+  {
+    "path": "images/logos/Optimism_Logo.png",
+    "hash": "4be683e95b379c6c970c54a270a0ccf35308cb06c40cbe9e337523a003fb700e"
+  },
+  {
+    "path": "images/logos/Polygon_Logo.png",
+    "hash": "ca69deb0f984224b23374273622a38fca2ab05d519ce76c961c606f3337d5a07"
+  },
+  {
+    "path": "images/logos/Zora_Logo.png",
+    "hash": "ae54f05da5b0c65ee05cf37995ccdf167fe0ddab7b4dcf7682ec0f62de412bbe"
+  },
+  {
+    "path": "images/logos/zkSync_Logo.png",
+    "hash": "1cb62468c1fed2e40a88d2c3960f247b9f57e7ade9a6663cc6c4e90c2c3e0bab"
+  },
+  {
+    "path": "images/noise-color.png",
+    "hash": "6003b3233b7ccdb7fd5c479ca8edf17003f8b4abf440c231c3d11eb1b8cbbb5b"
+  },
+  {
+    "path": "nft/svgs/gem.svg",
+    "hash": "8839bc9a814ccf70252214e05442ce2a9689d416520bc1f65e556c192ab44606"
+  },
+  {
+    "path": "nft/svgs/marketplaces/looksrare-grey.svg",
+    "hash": "eaa5fbdb9496e7ce7e4692a0d065aa00271b1168f6a71ad16c9c05237d2065c6"
+  },
+  {
+    "path": "nft/svgs/marketplaces/opensea-grey.svg",
+    "hash": "adb1f9a371f0c32d26504f26f2013098db2e0c6a1d0b9d7d2521456c085af99a"
+  },
+  {
+    "path": "nft/svgs/marketplaces/x2y2-grey.svg",
+    "hash": "b8f09f4b911fdab75a81beabb3489ad48b8bdb94b7717df44f1ed142f171ed75"
+  },
+  {
+    "path": "nfts-sitemap.xml",
+    "hash": "223454dd2fb433cab7c4adc1c6b051aa9c8e3cc1399240687b2a99c51c493e38"
+  },
+  {
+    "path": "pools-sitemap.xml",
+    "hash": "b7c519054961faeb46eea96be5a6e0b575a6360d4a1a51c98ae440e84a18cb80"
+  },
+  {
+    "path": "rive/landing-page.riv",
+    "hash": "ac30a8c8e41cb0c90853a3a2b492b7f2c10c9775278be47e37e375076724b61c"
+  },
+  {
+    "path": "robots.txt",
+    "hash": "fc56335f6671bcdf84567d51f2b59f97fc3dc0160af1a4a7680c48775fc2a158"
+  },
+  {
+    "path": "sitemap.xml",
+    "hash": "df3df8f8974a1d806800bba79cd6c14bd6f9ffde39d94c4266e6c5f1ae2d1b9c"
+  },
+  {
+    "path": "tokenlist.schema.json",
+    "hash": "cf4a057373863359246e8118d7ad9f76df372b0e3f1c0ca9baa29d7749f31103"
+  },
+  {
+    "path": "tokens-sitemap.xml",
+    "hash": "a5653eb3c5756cb2916ef0b3071372e124603039b1f54758d772485f2b99a6aa"
+  },
+  {
+    "path": "vercel-csp.json",
+    "hash": "5f4cdb254b059fec5f6deb4cb152b8e11514f58c3395caf7d96497f4fd3573c5"
+  },
+  {
+    "path": "whitepaper-uniswapx.pdf",
+    "hash": "360cd8328a6e1e7c9d684ea0a2f34d4b1db0f67cf312e7909373a2e3901b252c"
+  },
+  {
+    "path": "whitepaper-v3.pdf",
+    "hash": "1be05d1134f677dfbce9afa7392a2c200c000f3db74fb8d228e3636a2b624494"
+  },
+  {
+    "path": "whitepaper-v4.pdf",
+    "hash": "45a96d11a880416665b96cb06197ea0eb90f776da32a8bf3b1827c6ab63870cd"
+  },
+  {
+    "path": "whitepaper.pdf",
+    "hash": "32f8efd517767d8effb908e322df5ed1fe746ad0a3e642d49596cf2de1a6d21d"
+  }
+]

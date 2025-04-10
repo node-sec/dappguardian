@@ -3,18 +3,19 @@ import { ethers } from "hardhat";
 async function main() {
   const DappGuardian = await ethers.getContractFactory("DappGuardian");
   const guardian = await DappGuardian.deploy();
-  await guardian.deployed();
+  await guardian.waitForDeployment();
 
-  console.log("DappGuardian deployed to:", guardian.address);
+  console.log("DappGuardian deployed to:", await guardian.getAddress());
   
   // Wait for a few block confirmations
-  await guardian.deployTransaction.wait(5);
+  // const deployTx = await guardian.deploymentTransaction();
+  // if (deployTx) await deployTx.wait(5);
   
   console.log("Deployment confirmed");
   
   // Save deployment info for verification
   const deploymentInfo = {
-    address: guardian.address,
+    address: await guardian.getAddress(),
     network: network.name,
     timestamp: new Date().toISOString()
   };
@@ -22,9 +23,7 @@ async function main() {
   console.log("Deployment info:", deploymentInfo);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  }); 
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+}); 

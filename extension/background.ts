@@ -157,48 +157,59 @@ class DappGuardian {
       // Skip if not JavaScript
       if (!isJsFile && !isJsContent) {
         this.processingUrls.delete(details.url);
+        this.processedUrls.add(details.url); // Mark as processed to avoid retrying
         return;
       }
 
-      const response = await fetch(details.url, {
-        method: 'GET',
-        cache: 'force-cache',
-        credentials: 'omit',
-        headers: {
-          'Accept': 'application/javascript,*/*',
-        }
-      });
-
-      if (!response.ok) {
-        this.processingUrls.delete(details.url);
-        return;
-      }
-
-      const content = await response.text();
-      if (!content.trim() || content.length < 10) {
-        this.processingUrls.delete(details.url);
-        return;
-      }
-
-      const hash = await this.computeHash(content);
-      const url = new URL(details.url);
-      const hostname = url.hostname;
-
-      // Check if URL is already processed before storing
-      if (!this.processedUrls.has(details.url)) {
-        await this.storeHash({
-          url: details.url,
-          hash,
-          timestamp: Date.now(),
-          hostname
+      try {
+        const response = await fetch(details.url, {
+          method: 'GET',
+          cache: 'force-cache',
+          credentials: 'omit',
+          headers: {
+            'Accept': 'application/javascript,*/*',
+          },
+          // Add timeout to prevent hanging requests
+          signal: AbortSignal.timeout(5000)
         });
-        this.processedUrls.add(details.url);
-      }
 
-    } catch (error) {
-      if (!(error instanceof TypeError)) {
-        console.error("Error processing file:", details.url, error);
+        if (!response.ok) {
+          // Mark as processed even on failure to prevent retries
+          this.processedUrls.add(details.url);
+          this.processingUrls.delete(details.url);
+          return;
+        }
+
+        const content = await response.text();
+        if (!content.trim() || content.length < 10) {
+          this.processingUrls.delete(details.url);
+          this.processedUrls.add(details.url); // Mark as processed to avoid retrying
+          return;
+        }
+
+        // Rest of the processing logic
+        const hash = await this.computeHash(content);
+        const url = new URL(details.url);
+        const hostname = url.hostname;
+
+        // Check if URL is already processed before storing
+        if (!this.processedUrls.has(details.url)) {
+          await this.storeHash({
+            url: details.url,
+            hash,
+            timestamp: Date.now(),
+            hostname
+          });
+          this.processedUrls.add(details.url);
+        }
+      } catch (fetchError) {
+        // Handle fetch errors specifically
+        console.warn(`Fetch error for ${details.url}:`, fetchError);
+        this.processedUrls.add(details.url); // Mark as processed to avoid retrying
       }
+    } catch (error) {
+      console.error("Error processing file:", details.url, error);
+      this.processedUrls.add(details.url); // Mark as processed to avoid retrying
     } finally {
       this.processingUrls.delete(details.url);
     }

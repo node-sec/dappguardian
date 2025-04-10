@@ -11,7 +11,7 @@ const ABI = [
 const CONTRACT_ADDRESSES = {
   // Use the deployed contract address here, or a default if testing on localhost
   sepolia: "YOUR_DEPLOYED_CONTRACT_ADDRESS", // Replace with actual deployed address
-  localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3" // Default hardhat deployment address
+  localhost: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" // Default hardhat deployment address
 };
 
 // Multiple IPFS gateways for reliability
@@ -37,7 +37,7 @@ class ContractService {
   private manifestCache: ManifestCache = {};
   private cacheExpiryTime: number = 3600000; // 1 hour in milliseconds
   
-  constructor(networkName: string = "sepolia", rpcUrl?: string) {
+  constructor(networkName: string = "localhost", rpcUrl?: string) {
     // Use default RPC URL if none provided
     const defaultRpcUrl = networkName === "sepolia" 
       ? "https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161" // Public Infura endpoint
@@ -62,7 +62,7 @@ class ContractService {
     for (const gateway of IPFS_GATEWAYS) {
       try {
         const gatewayUrl = `${gateway}${cid}`;
-        console.log(`Trying IPFS gateway: ${gateway}`);
+        console.log(`Trying IPFS gateway: ${gatewayUrl}`);
         
         const response = await fetch(gatewayUrl, {
           method: 'GET',

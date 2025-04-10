@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-contract DappGuardian {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract DappGuardian is Ownable {
     struct FileHash {
         string filename;
         bytes32 hash;
@@ -32,6 +34,8 @@ contract DappGuardian {
     error InvalidVersion();
     error NoReleasesFound();
 
+    constructor() Ownable(msg.sender) {}
+
     modifier onlyDeveloper(string memory domain) {
         if (domainToDeveloper[domain] != msg.sender) {
             revert Unauthorized();
@@ -39,12 +43,12 @@ contract DappGuardian {
         _;
     }
 
-    function registerDomain(string memory domain) external {
+    function registerDomain(string memory domain, address developer) external onlyOwner {
         if (domainToDeveloper[domain] != address(0)) {
             revert DomainAlreadyRegistered();
         }
-        domainToDeveloper[domain] = msg.sender;
-        emit DomainRegistered(msg.sender, domain);
+        domainToDeveloper[domain] = developer;
+        emit DomainRegistered(developer, domain);
     }
 
     function registerRelease(
