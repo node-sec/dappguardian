@@ -13,16 +13,16 @@ describe("DappGuardian", function () {
   
   beforeEach(async function () {
     [owner, developer, other] = await ethers.getSigners();
-    const DappGuardian = await ethers.getContractFactory("DappGuardian");
-    dappGuardian = await DappGuardian.deploy();
-    await dappGuardian.waitForDeployment();
+    const DappGuardianFactory = await ethers.getContractFactory("DappGuardian");
+    const contract = await DappGuardianFactory.deploy();
+    dappGuardian = await contract.waitForDeployment() as unknown as DappGuardian;
   });
 
   describe("Domain Registration", function () {
     it("should allow registering a new domain", async function () {
       await expect(dappGuardian.connect(developer).registerDomain(testDomain))
         .to.emit(dappGuardian, "DomainRegistered")
-        .withArgs(testDomain, developer.address);
+        .withArgs(developer.address, testDomain);
 
       expect(await dappGuardian.getDeveloper(testDomain)).to.equal(developer.address);
     });
@@ -42,9 +42,22 @@ describe("DappGuardian", function () {
     it("should allow developer to register a new release", async function () {
       const metadata = "Release 1.0.0";
       
-      await expect(dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, metadata))
+      // Execute the transaction first
+      const tx = await dappGuardian.connect(developer).registerRelease(testDomain, testIpfsCid, metadata);
+      const receipt = await tx.wait();
+      
+      // Get the block from the transaction
+      const blockNumber = receipt?.blockNumber;
+      if (!blockNumber) throw new Error("Block number is undefined");
+      
+      const block = await ethers.provider.getBlock(blockNumber);
+      const timestamp = block?.timestamp;
+      if (!timestamp) throw new Error("Timestamp is undefined");
+      
+      // Now check the event with the correct timestamp
+      await expect(tx)
         .to.emit(dappGuardian, "ReleaseRegistered")
-        .withArgs(testDomain, 1, testIpfsCid, await getBlockTimestamp());
+        .withArgs(testDomain, 1, testIpfsCid, timestamp);
     });
 
     it("should prevent non-developer from registering a release", async function () {

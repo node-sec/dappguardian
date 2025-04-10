@@ -18,6 +18,7 @@ contract DappGuardian {
     mapping(string => address) public domainToDeveloper;
     mapping(string => Release[]) public domainToReleases;
     
+    event DomainRegistered(address indexed owner, string domain);
     event ReleaseRegistered(
         string indexed domain,
         uint256 version,
@@ -43,6 +44,7 @@ contract DappGuardian {
             revert DomainAlreadyRegistered();
         }
         domainToDeveloper[domain] = msg.sender;
+        emit DomainRegistered(msg.sender, domain);
     }
 
     function registerRelease(
